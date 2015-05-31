@@ -1,0 +1,76 @@
+python autoload/vache/profile.py
+Sat May 30 12:45:29 2015    all_names.prof
+
+         37664 function calls in 0.501 seconds
+
+   Ordered by: cumulative time
+   List reduced from 105 to 15 due to restriction <15>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.039    0.039    0.501    0.501 <string>:1(<module>)
+      109    0.397    0.004    0.461    0.004 profile.py:29(all_names)
+      109    0.004    0.000    0.065    0.001 vache.py:36(get_names)
+      170    0.000    0.000    0.029    0.000 vache.py:21(get_names_for)
+      171    0.000    0.000    0.028    0.000 vache.py:65(get_plist_files_with_path)
+      170    0.024    0.000    0.024    0.000 {method 'execute' of 'sqlite3.Cursor' objects}
+      170    0.001    0.000    0.023    0.000 plistlib.py:68(readPlist)
+      170    0.001    0.000    0.020    0.000 plistlib.py:400(parse)
+      170    0.006    0.000    0.017    0.000 {built-in method ParseFile}
+     2162    0.001    0.000    0.006    0.000 pyexpat.c:618(EndElement)
+     2162    0.001    0.000    0.005    0.000 plistlib.py:415(handleEndElement)
+      170    0.005    0.000    0.005    0.000 {_sqlite3.connect}
+        1    0.000    0.000    0.004    0.004 subprocess.py:544(check_output)
+        3    0.000    0.000    0.004    0.001 subprocess.py:473(_eintr_retry_call)
+     2162    0.001    0.000    0.004    0.000 pyexpat.c:566(StartElement)
+
+
+Sat May 30 12:45:29 2015    family_names.prof
+
+         34045 function calls in 0.028 seconds
+
+   Ordered by: cumulative time
+   List reduced from 88 to 15 due to restriction <15>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.028    0.028 <string>:1(<module>)
+        2    0.005    0.002    0.028    0.014 profile.py:35(family_names)
+        2    0.000    0.000    0.023    0.012 vache.py:36(get_names)
+        2    0.000    0.000    0.023    0.012 vache.py:75(get_plist_files_for_platform_families)
+      171    0.000    0.000    0.023    0.000 vache.py:65(get_plist_files_with_path)
+      170    0.001    0.000    0.017    0.000 plistlib.py:68(readPlist)
+      170    0.001    0.000    0.015    0.000 plistlib.py:400(parse)
+      170    0.004    0.000    0.014    0.000 {built-in method ParseFile}
+        1    0.000    0.000    0.005    0.005 subprocess.py:544(check_output)
+     2162    0.000    0.000    0.005    0.000 pyexpat.c:618(EndElement)
+        3    0.000    0.000    0.005    0.002 subprocess.py:473(_eintr_retry_call)
+     2162    0.001    0.000    0.004    0.000 plistlib.py:415(handleEndElement)
+        1    0.000    0.000    0.004    0.004 subprocess.py:768(communicate)
+        1    0.004    0.004    0.004    0.004 {method 'read' of 'file' objects}
+     2162    0.000    0.000    0.003    0.000 pyexpat.c:566(StartElement)
+
+
+Sat May 30 12:45:31 2015    encoded_names.prof
+
+         923643 function calls in 1.358 seconds
+
+   Ordered by: cumulative time
+   List reduced from 87 to 15 due to restriction <15>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.165    0.165    1.358    1.358 <string>:1(<module>)
+   886113    1.121    0.000    1.194    0.000 vache.py:46(get_encoded_names)
+      109    0.004    0.000    0.073    0.001 vache.py:36(get_names)
+      170    0.000    0.000    0.036    0.000 vache.py:21(get_names_for)
+      171    0.000    0.000    0.029    0.000 vache.py:65(get_plist_files_with_path)
+      170    0.029    0.000    0.029    0.000 {method 'execute' of 'sqlite3.Cursor' objects}
+      170    0.001    0.000    0.023    0.000 plistlib.py:68(readPlist)
+      170    0.001    0.000    0.020    0.000 plistlib.py:400(parse)
+      170    0.006    0.000    0.018    0.000 {built-in method ParseFile}
+      170    0.007    0.000    0.007    0.000 {_sqlite3.connect}
+     2162    0.001    0.000    0.006    0.000 pyexpat.c:618(EndElement)
+     2162    0.001    0.000    0.005    0.000 plistlib.py:415(handleEndElement)
+        1    0.000    0.000    0.005    0.005 subprocess.py:544(check_output)
+        3    0.000    0.000    0.005    0.002 subprocess.py:473(_eintr_retry_call)
+     2162    0.001    0.000    0.004    0.000 pyexpat.c:566(StartElement)
+
+
