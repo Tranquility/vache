@@ -27,24 +27,21 @@ if not os.path.exists(DOC_SET_PLATFORM_FAMILY_CACHE_PATH):
     if not os.path.exists(VACHE_CACHE_DIR):
         os.makedirs(VACHE_CACHE_DIR)
 
-    with open(DOC_SET_PLATFORM_FAMILY_CACHE_PATH, 'w') as f:
-        conn = sqlite3.connect(DOC_SET_PLATFORM_FAMILY_CACHE_PATH)
-        conn.execute('CREATE TABLE t (path BLOB, plist BLOB)')
+    conn = sqlite3.connect(DOC_SET_PLATFORM_FAMILY_CACHE_PATH)
+    conn.execute('CREATE TABLE t (path BLOB, plist BLOB)')
 
 
 def get_names(doc_db):
     conn = sqlite3.connect(doc_db)
-    c = conn.cursor()
-    c.execute('SELECT name FROM searchIndex')
-    return c
+    return conn.execute('SELECT name FROM searchIndex')
 
 
 def get_uri_path(doc_db, name):
     conn = sqlite3.connect(doc_db)
-    c = conn.cursor()
-    c.execute('SELECT path FROM searchIndex WHERE name = ?', (name,))
-    (out,) = c.fetchone()
-    return out
+    (uri,) = conn.execute(
+        'SELECT path FROM searchIndex WHERE name = ?', (name,)
+    ).fetchone()
+    return uri
 
 
 def retrying(f, x):
