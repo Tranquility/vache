@@ -55,10 +55,12 @@ def fetchplists(paths):
     with sqlite3.connect(DOC_SET_PLATFORM_FAMILY_CACHE_PATH) as conn:
         conn.text_factory = str
         c = conn.cursor()
+
         cache = {}
         c.execute('SELECT * FROM t')
         for path, plist in c:
             cache[path] = cPickle.loads(plist)
+
         newInserts = {}
 
         for path in paths:
@@ -70,11 +72,10 @@ def fetchplists(paths):
             else:
                 parsed = plistlib.readPlist(path)
                 cache[path] = parsed
-                newInserts[path] = parsed
+                newInserts[path] = cPickle.dumps(parsed)
                 yield parsed, path
 
-        for k, v in newInserts.iteritems():
-            c.execute(
-                'INSERT INTO t (path, plist) VALUES (?, ?)',
-                (k, cPickle.dumps(v))
-            )
+        c.executemany(
+            'INSERT INTO t (path, plist) VALUES (?, ?)',
+            newInserts.iteritems()
+        )
