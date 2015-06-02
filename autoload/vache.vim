@@ -38,12 +38,20 @@ let s:get_docsets_cmd = 'python ' . expand('<sfile>:p:h') . '/vache/get_docsets.
 function! vache#lookup(...)
     let l:filetype_options = extend(s:filetype_options, g:vache_filetype_options)
 
+    let l:get_docsets_cmd = join([s:get_docsets_cmd, g:vache_default_docset_dir])
     if has_key(l:filetype_options, &ft)
         let l:options = filetype_options[&ft]
-        let l:encoded_options = pyeval('base64.b64encode(json.dumps(vim.eval("l:options")))')
-        let l:get_docsets_cmd = s:get_docsets_cmd . ' --filetype ' . l:encoded_options
-    else
-        let l:get_docsets_cmd = s:get_docsets_cmd
+        if type(l:options) == 3
+            let l:families = join(l:options, ',')
+            let l:args = ['--families', l:families, g:vache_default_docset_dir]
+            let l:get_docsets_cmd = join([s:get_docsets_cmd] + l:args)
+
+        elseif type(l:options) == 4
+            let l:get_docsets_cmd = join([s:get_docsets_cmd, l:options.dir])
+
+        else
+            echoerr 'vache: bad vache_filetype_options value for filetype: ' . &ft
+        endif
     endif
 
     if a:0 < 1
@@ -53,7 +61,7 @@ function! vache#lookup(...)
     endif
 
     call fzf#run({
-        \ 'source': l:get_docsets_cmd . ' ' . g:vache_default_docset_dir,
+        \ 'source': l:get_docsets_cmd,
         \ 'sink': function('s:browse'),
         \ 'options': '--with-nth=3 --delimiter=, --query="' . l:query . '"'
         \ })
@@ -63,9 +71,10 @@ function! vache#sift(...)
     if a:0 < 1
         let l:get_docsets_cmd = s:get_docsets_cmd
     else
-        let l:families_encoded = pyeval('base64.b64encode(json.dumps(vim.eval("a:000")))')
-        let l:get_docsets_cmd = s:get_docsets_cmd . ' --families ' . l:families_encoded
+        let l:families = join(a:000, ',')
+        let l:get_docsets_cmd = s:get_docsets_cmd . ' --families ' . l:families
     endif
+    echo 'cmd: ' . l:get_docsets_cmd
 
     call fzf#run({
         \ 'source': l:get_docsets_cmd . ' ' . g:vache_default_docset_dir,

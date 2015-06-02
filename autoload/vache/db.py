@@ -19,16 +19,21 @@ else:
     print 'could not recognise platform: ', platform.system()
     sys.exit(1)
 
-VACHE_CACHE_DIR = os.path.join(USER_CACHE_DIR, 'vache')
-DOC_SET_PLATFORM_FAMILY_CACHE_PATH = os.path.join(
-    VACHE_CACHE_DIR, 'DocSetPlatformFamily.cache'
+CACHE_DIR = os.path.join(USER_CACHE_DIR, 'vache')
+PLIST_CACHE = os.path.join(
+    CACHE_DIR, 'plist.cache.sqlite3'
 )
-if not os.path.exists(DOC_SET_PLATFORM_FAMILY_CACHE_PATH):
-    if not os.path.exists(VACHE_CACHE_DIR):
-        os.makedirs(VACHE_CACHE_DIR)
+LOG_DB = os.path.join(CACHE_DIR, 'log.sqlite3')
+if not os.path.exists(CACHE_DIR):
+    os.makedirs(CACHE_DIR)
 
-    conn = sqlite3.connect(DOC_SET_PLATFORM_FAMILY_CACHE_PATH)
+if not os.path.exists(PLIST_CACHE):
+    conn = sqlite3.connect(PLIST_CACHE)
     conn.execute('CREATE TABLE t (path BLOB, plist BLOB)')
+
+if not os.path.exists(LOG_DB):
+    conn = sqlite3.connect(LOG_DB)
+    conn.execute('CREATE TABLE t (doc_db TEXT, error TEXT)')
 
 
 def get_names(doc_db):
@@ -44,6 +49,14 @@ def get_uri_path(doc_db, name):
     return uri
 
 
+def log_bad_docset_db(doc_db, error):
+    with sqlite3.connect(LOG_DB) as conn:
+        conn.execute(
+            'INSERT INTO t (doc_db, error) VALUES (?, ?)',
+            (doc_db, unicode(error))
+        )
+
+
 def retrying(f, x):
     try:
         return f(x)
@@ -52,7 +65,7 @@ def retrying(f, x):
 
 
 def fetchplists(paths):
-    with sqlite3.connect(DOC_SET_PLATFORM_FAMILY_CACHE_PATH) as conn:
+    with sqlite3.connect(PLIST_CACHE) as conn:
         conn.text_factory = str
         c = conn.cursor()
 

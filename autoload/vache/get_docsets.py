@@ -1,48 +1,49 @@
 import vache
 import sys
-import json
-import base64
-
-def get_filetype_docsets(docset_root, options):
-    if isinstance(options, dict):
-        return vache.get_plist_files_with_path(options['dir'])
-
-    elif isinstance(options, list):
-        return vache.get_plist_files_for_platform_families(options, docset_root)
-    else:
-        print 'echoerr "vache: vache_filetype_option[&ft]: must be either a list or dict"'
-        sys.exit(1)
-
-
-def get_family_docsets(docset_root, families):
-    return vache.get_plist_files_for_platform_families(families, docset_root)
+import string
+import os
 
 
 def usage():
-    print 'get_docsets [ --families <families> | --filetype <filetype> ] <docset_dir>'
+    print 'usage: get_docsets [ --log ] [ --families <families> ] <docset_dir>'
     sys.exit(1)
 
 
 def main():
     args = sys.argv[1:]
+    if len(args) < 1:
+        usage()
 
-    second_arg_map = {
-        '--families': get_family_docsets,
-        '--filetype': get_filetype_docsets
-    }
+    is_logging_enabled = args[0] == '--log'
+    if is_logging_enabled:
+        args = args[1:]
+
+    if len(args) < 1:
+        usage()
+
     docsets = None
+    docset_root = args[-1]
+    if not os.path.isdir(docset_root):
+        if docset_root == '--families':
+            print 'error: flag --families present without <families> argument'
+        elif len(args) > 2:
+            print "error: '{}' is not a directory".format(docset_root)
+        else:
+            print 'error: missing <docset_dir> argument'
+        usage()
+
     if len(args) == 1:
-        docsets = vache.get_plist_files_with_path(args[0])
-    elif len(args) == 3:
-        try:
-            parsed_arg = json.loads(base64.b64decode(args[1]))
-            docsets = second_arg_map[args[0]](args[2], parsed_arg)
-        except KeyError:
-            usage()
+        docsets = vache.get_plist_files_with_path(docset_root)
+
+    elif len(args) == 3 and args[0] == '--families':
+        families = string.split(args[1], ',')
+
+        docsets = \
+            vache.get_plist_files_for_platform_families(docset_root, families)
     else:
         usage()
 
-    for encoded in vache.get_encoded_names(docsets):
+    for encoded in vache.get_encoded_names(is_logging_enabled, docsets):
         print encoded.encode('utf-8')
 
 
