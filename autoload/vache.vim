@@ -4,8 +4,6 @@ endif
 
 python <<EOF
 import vim
-import base64
-import json
 import os
 import sys
 sys.path.append(
@@ -63,7 +61,7 @@ function! vache#lookup(...)
     call fzf#run({
         \ 'source': l:get_docsets_cmd,
         \ 'sink': function('s:browse'),
-        \ 'options': '--with-nth=3 --delimiter=, --query="' . l:query . '"'
+        \ 'options': '--with-nth=2,3 --delimiter="\t" --query="' . l:query . '"'
         \ })
 endfunction
 
@@ -79,6 +77,6 @@ function! vache#sift(...)
     call fzf#run({
         \ 'source': join([l:get_docsets_cmd, g:vache_default_docset_dir]),
         \ 'sink': function('s:browse'),
-        \ 'options': '--with-nth=3 --delimiter=,',
+        \ 'options': '--with-nth=2,3 --delimiter="\t"',
         \ })
 endfunction
