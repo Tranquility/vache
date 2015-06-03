@@ -79,8 +79,7 @@ all docsets should be assumed to work unless they are found in the list for
 issue [#9][4]
 
 the following is a list of associations from filetype to a list of docset
-families enabledwhat has already been tested and added to the default families
-enabled for each filetype. please submit issues / pull requests to add more
+families enabled for that filetype. please submit issues / pull requests to add more
 associations to this list
 
 
