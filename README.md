@@ -39,7 +39,7 @@ box for 90% of use cases. for the remaining 10%, global variables exist
   `VacheLookup` unless the current filetype is configured to use its own
   directory (see `g:vache_filetype_options`)
 
-  _example_
+  __example__
 
       let g:vache_default_docset_dir = $HOME . '/docsets'
 
@@ -54,11 +54,10 @@ box for 90% of use cases. for the remaining 10%, global variables exist
       filetype are to be found. `VacheLookup` only searches through
       documentation sets which are found under this directory
 
-  this value will be merged with the default filetype options dictionary each
-  time `VacheLookup` or `VacheSift` are called, so feel free to dynamically
-  update it
+  options set by this variable will override those defined in the default
+  filetype options
 
-  _example_
+  __example__
 
       let g:vache_filetype_options = {
           \ 'haskell': { 'dir': $HOME . '/haskell_docsets' },
@@ -68,7 +67,7 @@ box for 90% of use cases. for the remaining 10%, global variables exist
 * `g:vache_browser` - the name of a web browser executable to be used for
   opening documentation. defaults to `$BROWSER` on `has('unix')` systems
 
-  _example_
+  __example__
 
       let g:vache_browser = 'chromium-browser'
 
