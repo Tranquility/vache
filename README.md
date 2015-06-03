@@ -39,7 +39,7 @@ box for 90% of use cases. for the remaining 10%, global variables exist
   `VacheLookup` unless the current filetype is configured to use its own
   directory (see `g:vache_filetype_options`)
 
-  ###example
+  ####example
 
       let g:vache_default_docset_dir = $HOME . '/docsets'
 
@@ -58,7 +58,7 @@ box for 90% of use cases. for the remaining 10%, global variables exist
   time `VacheLookup` or `VacheSift` are called, so feel free to dynamically
   update it
 
-  ###example
+  ####example
 
       let g:vache_filetype_options = {
           \ 'haskell': { 'dir': $HOME . '/haskell_docsets' },
@@ -68,7 +68,7 @@ box for 90% of use cases. for the remaining 10%, global variables exist
 * `g:vache_browser` - the name of a web browser executable to be used for
   opening documentation. defaults to `$BROWSER` on `has('unix')` systems
 
-  ###example
+  ####example
 
       let g:vache_browser = 'chromium-browser'
 
