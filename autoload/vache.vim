@@ -52,16 +52,15 @@ function! vache#lookup(...)
         endif
     endif
 
-    if a:0 < 1
-        let l:query = ''
-    else
-        let l:query = a:1
+    let l:fzf_options = '--with-nth=2,3 --delimiter="\t"'
+    if a:0 == 1
+        let l:fzf_options = l:fzf_options . ' --query="' . a:1 . '"'
     endif
 
     call fzf#run({
         \ 'source': l:get_docsets_cmd,
         \ 'sink': function('s:browse'),
-        \ 'options': '--with-nth=2,3 --delimiter="\t" --query="' . l:query . '"'
+        \ 'options': l:fzf_options
         \ })
 endfunction
 
