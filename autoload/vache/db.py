@@ -3,6 +3,7 @@ import plistlib
 import platform
 import os
 import sys
+import json
 import cPickle
 
 USER_CACHE_DIR = None
@@ -20,20 +21,27 @@ else:
     sys.exit(1)
 
 CACHE_DIR = os.path.join(USER_CACHE_DIR, 'vache')
-PLIST_CACHE = os.path.join(
-    CACHE_DIR, 'plist.cache.sqlite3'
-)
-LOG_DB = os.path.join(CACHE_DIR, 'log.sqlite3')
 if not os.path.exists(CACHE_DIR):
     os.makedirs(CACHE_DIR)
 
+PLIST_CACHE = os.path.join(CACHE_DIR, 'plist.cache.sqlite3')
 if not os.path.exists(PLIST_CACHE):
-    conn = sqlite3.connect(PLIST_CACHE)
-    conn.execute('CREATE TABLE t (path BLOB, plist BLOB)')
+    with sqlite3.connect(PLIST_CACHE) as conn:
+        conn.execute('CREATE TABLE t (path BLOB, plist BLOB)')
 
+LOG_DB = os.path.join(CACHE_DIR, 'log.sqlite3')
 if not os.path.exists(LOG_DB):
-    conn = sqlite3.connect(LOG_DB)
-    conn.execute('CREATE TABLE t (doc_db TEXT, error TEXT)')
+    with sqlite3.connect(LOG_DB) as conn:
+        conn.execute("""CREATE TABLE sql_log
+            ( doc_db TEXT
+            , error TEXT
+            , UNIQUE(doc_db)
+            )""")
+        conn.execute("""CREATE TABLE plist_log
+            ( plist TEXT
+            , error TEXT
+            , UNIQUE(plist)
+            )""")
 
 
 def get_names(doc_db):
@@ -49,10 +57,18 @@ def get_uri_path(doc_db, name):
     return uri
 
 
+def log_bad_plist(plist, error):
+    with sqlite3.connect(LOG_DB) as conn:
+        conn.execute(
+            'INSERT OR IGNORE INTO plist_log (plist, error) VALUES (?, ?)',
+            (json.dumps(plist), unicode(error))
+        )
+
+
 def log_bad_docset_db(doc_db, error):
     with sqlite3.connect(LOG_DB) as conn:
         conn.execute(
-            'INSERT INTO t (doc_db, error) VALUES (?, ?)',
+            'INSERT OR IGNORE INTO sql_log (doc_db, error) VALUES (?, ?)',
             (doc_db, unicode(error))
         )
 

@@ -27,22 +27,22 @@ else:
 
 
 def all_names():
-    plists = vache.get_plist_files_with_path(DOCSET_ROOT)
-    results = vache.get_names(False, plists)
+    plists = vache.get_plist_files(DOCSET_ROOT)
+    results = vache.get_names(plists)
     for path, meta, names in results:
         yield list(names)
 
 
 def family_names():
-    plists = vache.get_plist_files_for_platform_families(['go'], DOCSET_ROOT)
-    results = vache.get_names(False, plists)
+    plists = vache.get_plist_files_for_families(DOCSET_ROOT, ['go'])
+    results = vache.get_names(plists)
     for path, meta, names in results:
         yield list(names)
 
 
 def encoded_names():
-    plists = vache.get_plist_files_with_path(DOCSET_ROOT)
-    return vache.get_encoded_names(False, plists)
+    plists = vache.get_plist_files(DOCSET_ROOT)
+    return vache.get_encoded_names(plists)
 
 
 def profile(expr, path):

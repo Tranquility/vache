@@ -17,25 +17,25 @@ def doc_db_for(doc_root):
     return os.path.join(resource_dir_for(doc_root), 'docSet.dsidx')
 
 
-def get_names(is_logging_enabled, metas):
-    for meta, path in metas:
+def get_names(plists):
+    for plist, path in plists:
         doc_db = doc_db_for(path)
-        encoded_meta = base64.b64encode(json.dumps(meta))
+        encoded_plist = base64.b64encode(json.dumps(plist))
+
         try:
-            yield path, encoded_meta, db.get_names(doc_db)
+            yield path, encoded_plist, db.get_names(doc_db)
+
         except sqlite3.OperationalError as e:
-            if is_logging_enabled:
-                db.log_bad_docset_db(doc_db, e)
-            pass
+            db.log_bad_docset_db(doc_db, e)
 
 
-def get_encoded_names(is_logging_enabled, metas):
-    for path, encoded_meta, sql_rows in get_names(is_logging_enabled, metas):
+def get_encoded_names(plists):
+    for path, encoded_plist, sql_rows in get_names(plists):
         for (name,) in sql_rows:
-            yield path + SEP + encoded_meta + SEP + name
+            yield path + SEP + encoded_plist + SEP + name
 
 
-def get_url(path, meta, name):
+def get_url(path, plist, name):
     uri_path = db.get_uri_path(doc_db_for(path), name)
     absolute_path = os.path.join(
         resource_dir_for(path), 'Documents', uri_path
@@ -44,11 +44,11 @@ def get_url(path, meta, name):
 
 
 def decode_url(line):
-    path, encoded_meta, name = string.split(line, SEP)
-    return get_url(path, json.loads(base64.b64decode(encoded_meta)), name)
+    path, encoded_plist, name = string.split(line, SEP)
+    return get_url(path, json.loads(base64.b64decode(encoded_plist)), name)
 
 
-def get_plist_files_with_path(docset_root):
+def get_plist_files(docset_root):
     out = subprocess.check_output(
         ['find', docset_root,
          '-maxdepth', '3',
@@ -59,11 +59,12 @@ def get_plist_files_with_path(docset_root):
     return db.retrying(db.fetchplists, string.split(out, os.linesep))
 
 
-def get_plist_files_for_platform_families(docset_root, families):
-    for meta, path in get_plist_files_with_path(docset_root):
+def get_plist_files_for_families(docset_root, families):
+    for plist, path in get_plist_files(docset_root):
         try:
-            if any([family == meta['DocSetPlatformFamily']
+            if any([family == plist['DocSetPlatformFamily']
                     for family in families]):
-                yield meta, path
-        except KeyError:
-            pass
+                yield plist, path
+
+        except KeyError as e:
+            db.log_bad_plist(plist, e)

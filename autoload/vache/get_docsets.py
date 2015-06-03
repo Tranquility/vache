@@ -11,12 +11,6 @@ def usage():
 
 def main():
     args = sys.argv[1:]
-    if len(args) < 1:
-        usage()
-
-    is_logging_enabled = args[0] == '--log'
-    if is_logging_enabled:
-        args = args[1:]
 
     if len(args) < 1:
         usage()
@@ -33,17 +27,17 @@ def main():
         usage()
 
     if len(args) == 1:
-        docsets = vache.get_plist_files_with_path(docset_root)
+        docsets = vache.get_plist_files(docset_root)
 
     elif len(args) == 3 and args[0] == '--families':
         families = string.split(args[1], ',')
 
         docsets = \
-            vache.get_plist_files_for_platform_families(docset_root, families)
+            vache.get_plist_files_for_families(docset_root, families)
     else:
         usage()
 
-    for encoded in vache.get_encoded_names(is_logging_enabled, docsets):
+    for encoded in vache.get_encoded_names(docsets):
         print encoded.encode('utf-8')
 
 
