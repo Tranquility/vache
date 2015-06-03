@@ -39,6 +39,10 @@ box for 90% of use cases. for the remaining 10%, global variables exist
   `VacheLookup` unless the current filetype is configured to use its own
   directory (see `g:vache_filetype_options`)
 
+  ###example
+
+      let g:vache_default_docset_dir = $HOME . '/docsets'
+
 * `g:vache_filetype_options` - a dictionary where keys are filetypes and values
   are one of:
   - a list of docset families to associate with that filetype. `VacheLookup`
@@ -50,27 +54,44 @@ box for 90% of use cases. for the remaining 10%, global variables exist
       filetype are to be found. `VacheLookup` only searches through
       documentation sets which are found under this directory
 
+  this value will be merged with the default filetype options dictionary each
+  time `VacheLookup` or `VacheSift` are called, so feel free to dynamically
+  update it
+
+  ###example
+
+      let g:vache_filetype_options = {
+          \ 'haskell': { 'dir': $HOME . '/haskell_docsets' },
+          \ 'javascript': [ 'javascript', 'jquery', 'jqueryui' ]
+          \ }
+
 * `g:vache_browser` - the name of a web browser executable to be used for
   opening documentation. defaults to `$BROWSER` on `has('unix')` systems
+
+  ###example
+
+      let g:vache_browser = 'chromium-browser'
 
 
 supported docset families
 -------------------------
 
-the following is what has already been tested and added to the default families
-enabled for each filetype
+all docsets should be assumed to work unless they are found in the list for
+issue [#9][4]
 
-many more families are believed to work, but some may not
+the following is a list of associations from filetype to a list of docset
+families enabledwhat has already been tested and added to the default families
+enabled for each filetype. please submit issues / pull requests to add more
+associations to this list
 
-listed by filetype:
 
-* haskell - haskell
-* go - go
-* js - javascript, lodash, d3, moment
-* r - r
-* css - css
-* less - css, less
-* svg - svg
+* haskell -> haskell
+* go -> go
+* js -> javascript, lodash, d3, moment
+* r -> r
+* css -> css
+* less -> css, less
+* svg -> svg
 
 
 contributing
@@ -83,8 +104,11 @@ known bugs
 ----------
 
 * some documentation sets use unsupported schemas for their sqlite database
+* windows support is incomplete until we have an implementation of a replacement
+  for the unix `find` command
 
 
 [1]: https://kapeli.com
 [2]: http://zealdocs.org
 [3]: https://github.com/junegunn/fzf
+[4]: https://github.com/dnhgff/vache/issues/9
