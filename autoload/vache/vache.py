@@ -1,3 +1,4 @@
+import types
 import string
 import sqlite3
 import base64
@@ -21,18 +22,14 @@ def get_names(plists):
     for plist, path in plists:
         doc_db = doc_db_for(path)
         encoded_plist = base64.b64encode(json.dumps(plist))
+        prefix = path + SEP + encoded_plist + SEP
 
         try:
-            yield path, encoded_plist, db.get_names(doc_db)
+            for (name,) in db.get_names(doc_db):
+                yield prefix + name
 
         except sqlite3.OperationalError as e:
             db.log_bad_docset_db(doc_db, e)
-
-
-def get_encoded_names(plists):
-    for path, encoded_plist, sql_rows in get_names(plists):
-        for (name,) in sql_rows:
-            yield path + SEP + encoded_plist + SEP + name
 
 
 def get_url(path, plist, name):
@@ -56,7 +53,7 @@ def get_plist_files(docset_root):
          '-name', '*.plist']
     )
 
-    return db.retrying(db.fetchplists, string.split(out, os.linesep))
+    return db.fetchplists(string.split(out, os.linesep))
 
 
 def get_plist_files_for_families(docset_root, families):

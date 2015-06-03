@@ -37,8 +37,8 @@ def main():
     else:
         usage()
 
-    for encoded in vache.get_encoded_names(docsets):
-        print encoded.encode('utf-8')
+    for encoded in vache.get_names(docsets):
+        print encoded
 
 
 if __name__ == '__main__':

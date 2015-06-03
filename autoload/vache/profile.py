@@ -26,23 +26,16 @@ else:
     sys.exit(1)
 
 
-def all_names():
-    plists = vache.get_plist_files(DOCSET_ROOT)
-    results = vache.get_names(plists)
-    for path, meta, names in results:
-        yield list(names)
-
-
 def family_names():
     plists = vache.get_plist_files_for_families(DOCSET_ROOT, ['go'])
-    results = vache.get_names(plists)
-    for path, meta, names in results:
-        yield list(names)
+    for _ in vache.get_names(plists):
+        pass
 
 
-def encoded_names():
+def all_names():
     plists = vache.get_plist_files(DOCSET_ROOT)
-    return vache.get_encoded_names(plists)
+    for _ in vache.get_names(plists):
+        pass
 
 
 def profile(expr, path):
@@ -51,9 +44,8 @@ def profile(expr, path):
 
 
 def main():
-    profile('list(all_names())', 'all_names.prof')
-    profile('list(family_names())', 'family_names.prof')
-    profile('list(encoded_names())', 'encoded_names.prof')
+    profile('all_names()', 'all_names.prof')
+    profile('family_names()', 'family_names.prof')
 
 if __name__ == '__main__':
     main()

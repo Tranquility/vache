@@ -72,12 +72,12 @@ function! vache#sift(...)
         let l:get_docsets_cmd = s:get_docsets_cmd
     else
         let l:families = join(a:000, ',')
-        let l:get_docsets_cmd = s:get_docsets_cmd . ' --families ' . l:families
+        let l:get_docsets_cmd = join([s:get_docsets_cmd, '--families', l:families])
     endif
     echo 'cmd: ' . l:get_docsets_cmd
 
     call fzf#run({
-        \ 'source': l:get_docsets_cmd . ' ' . g:vache_default_docset_dir,
+        \ 'source': join([l:get_docsets_cmd, g:vache_default_docset_dir]),
         \ 'sink': function('s:browse'),
         \ 'options': '--with-nth=3 --delimiter=,',
         \ })

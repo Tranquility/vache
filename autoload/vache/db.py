@@ -45,16 +45,17 @@ if not os.path.exists(LOG_DB):
 
 
 def get_names(doc_db):
-    conn = sqlite3.connect(doc_db)
-    return conn.execute('SELECT name FROM searchIndex')
+    with sqlite3.connect(doc_db) as conn:
+        conn.text_factory = str
+        return conn.execute('SELECT name FROM searchIndex')
 
 
 def get_uri_path(doc_db, name):
-    conn = sqlite3.connect(doc_db)
-    (uri,) = conn.execute(
-        'SELECT path FROM searchIndex WHERE name = ?', (name,)
-    ).fetchone()
-    return uri
+    with sqlite3.connect(doc_db) as conn:
+        (uri,) = conn.execute(
+            'SELECT path FROM searchIndex WHERE name = ?', (name,)
+        ).fetchone()
+        return uri
 
 
 def log_bad_plist(plist, error):
@@ -71,13 +72,6 @@ def log_bad_docset_db(doc_db, error):
             'INSERT OR IGNORE INTO sql_log (doc_db, error) VALUES (?, ?)',
             (doc_db, unicode(error))
         )
-
-
-def retrying(f, x):
-    try:
-        return f(x)
-    except:
-        return retrying(f, x)
 
 
 def fetchplists(paths):
