@@ -2,6 +2,7 @@ import string
 import sqlite3
 import os
 import subprocess
+import platform
 
 import db
 
@@ -48,9 +49,13 @@ def decode_url(line):
 
 
 def get_plist_files(docset_root):
+    maxdepth = '3'
+    if platform.system() == 'Darwin':
+        maxdepth = '4'
+
     out = subprocess.check_output(
         ['find', docset_root,
-         '-maxdepth', '4',
+         '-maxdepth', maxdepth,
          '-type', 'f',
          '-name', '*.plist']
     )
