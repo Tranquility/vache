@@ -25,7 +25,7 @@ let s:filetype_options = {
 function! s:browse(line)
     let l:uri = pyeval('vache.decode_url(unicode(vim.eval("a:line").strip()))')
 
-    let l:ff_out = system(eval('g:vache_browser') . ' ' . eval('l:uri'))
+    let l:ff_out = system(eval('g:vache_browser') . ' "' . eval('l:uri') . '"')
     if v:shell_error != 0
         echoerr 'vache: browser err: '.l:ff_out
     endif

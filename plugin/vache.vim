@@ -2,7 +2,7 @@ if !exists('g:vache_default_docset_dir')
     if has('unix')
         let s:uname = system("uname -s")
         if s:uname == "Darwin\n"
-            let g:vache_default_docset_dir = $HOME . '/Library/Application Support/Dash/DocSets'
+            let g:vache_default_docset_dir = $HOME . '/Library/Application\ Support/Dash/DocSets'
         else
             let g:vache_default_docset_dir = $HOME . '/.local/share/Zeal/Zeal/docsets'
         endif
