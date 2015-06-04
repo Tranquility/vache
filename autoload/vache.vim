@@ -31,7 +31,7 @@ function! s:browse(line)
     endif
 endfunction
 
-let s:get_docsets_cmd = 'python ' . expand('<sfile>:p:h') . '/vache/get_docsets.py'
+let s:get_docsets_cmd = 'python2 ' . expand('<sfile>:p:h') . '/vache/get_docsets.py'
 
 function! vache#lookup(...)
     let l:filetype_options = extend(s:filetype_options, g:vache_filetype_options)
