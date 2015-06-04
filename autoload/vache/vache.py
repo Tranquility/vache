@@ -50,7 +50,7 @@ def decode_url(line):
 def get_plist_files(docset_root):
     out = subprocess.check_output(
         ['find', docset_root,
-         '-maxdepth', '3',
+         '-maxdepth', '4',
          '-type', 'f',
          '-name', '*.plist']
     )
