@@ -1,3 +1,6 @@
+python import vache
+python import vim
+
 function! s:quote(string)
     return '"' . a:string . '"'
 endfunction
