@@ -1,5 +1,6 @@
 if !has('python')
     echoerr 'vache: no python support found'
+    finish
 endif
 
 python <<EOF
@@ -35,17 +36,22 @@ function! s:osx_browse_cmd(uri)
         \ ])
 endfunction
 
+function! s:default_browse_cmd(uri)
+    return join([ g:vache_browser, s:quote(a:uri) ])
+endfunction
+
+let s:browse_cmd = function('s:default_browse_cmd')
+if has('unix')
+    let s:uname = system('uname -s')
+    if s:uname == "Darwin\n"
+        let s:browse_cmd = function('s:osx_browse_cmd')
+    endif
+endif
+
 function! s:browse(line)
     let l:uri = pyeval('vache.decode_url(unicode(vim.eval("a:line").strip()))')
 
-    let l:browse_cmd = join([ g:vache_browser, s:quote(l:uri) ])
-    if has('unix')
-        let l:uname = system('uname -s')
-        if l:uname == "Darwin\n"
-            let l:browse_cmd = s:osx_browse_cmd(l:uri)
-        endif
-    endif
-
+    let l:browse_cmd = s:browse_cmd(l:uri)
     let l:browser_out = system(l:browse_cmd)
     if v:shell_error != 0
         echoerr 'vache: browser err: ' . l:browser_out
