@@ -51,8 +51,7 @@ endif
 function! s:browse(line)
     let l:uri = pyeval('vache.decode_url(unicode(vim.eval("a:line").strip()))')
 
-    let l:browse_cmd = s:browse_cmd(l:uri)
-    let l:browser_out = system(l:browse_cmd)
+    let l:browser_out = system(s:browse_cmd(l:uri))
     if v:shell_error != 0
         echoerr 'vache: browser err: ' . l:browser_out
     endif
