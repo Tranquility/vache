@@ -23,41 +23,18 @@ let s:filetype_options = {
     \ 'svg': [ 'svg' ],
     \ }
 
-function! s:quote(string)
-    return '"' . a:string . '"'
-endfunction
-
-function! s:osx_browse_cmd(uri)
-    return join([
-        \ "osascript -e 'tell application",
-        \ s:quote(g:vache_browser),
-        \ 'to open location',
-        \ s:quote(a:uri) . "'"
-        \ ])
-endfunction
-
-function! s:default_browse_cmd(uri)
-    return join([ g:vache_browser, s:quote(a:uri) ])
-endfunction
-
-let s:browse_cmd = function('s:default_browse_cmd')
-if has('unix')
-    let s:uname = system('uname -s')
-    if s:uname == "Darwin\n"
-        let s:browse_cmd = function('s:osx_browse_cmd')
+let s:python = 'python2'
+if !executable(s:python)
+    let s:python_version_out = system('python --version')
+    let s:python_version = matchstr(s:python_version_out, 'Python 2\.')
+    if empty(s:python_version)
+        echoerr 'vache: could not find python 2'
+        finish
     endif
+    let s:python = 'python'
 endif
-
-function! s:browse(line)
-    let l:uri = pyeval('vache.decode_url(unicode(vim.eval("a:line").strip()))')
-
-    let l:browser_out = system(s:browse_cmd(l:uri))
-    if v:shell_error != 0
-        echoerr 'vache: browser err: ' . l:browser_out
-    endif
-endfunction
-
-let s:get_docsets_cmd = 'python2 ' . expand('<sfile>:p:h') . '/vache/get_docsets.py'
+let s:docset_script = expand('<sfile>:p:h') . '/vache/get_docsets.py'
+let s:get_docsets_cmd = join([ s:python, s:docset_script ])
 
 function! vache#lookup(...)
     let l:filetype_options = extend(s:filetype_options, g:vache_filetype_options)
@@ -80,12 +57,12 @@ function! vache#lookup(...)
 
     let l:fzf_options = '--with-nth=2,3 --delimiter="\t"'
     if a:0 == 1
-        let l:fzf_options = l:fzf_options . ' --query=' . s:quote(a:1)
+        let l:fzf_options = l:fzf_options . ' --query="' . a:1 . '"'
     endif
 
     call fzf#run({
         \ 'source': l:get_docsets_cmd,
-        \ 'sink': function('s:browse'),
+        \ 'sink': function('vache#browse#browse'),
         \ 'options': l:fzf_options
         \ })
 endfunction
@@ -101,7 +78,7 @@ function! vache#sift(...)
 
     call fzf#run({
         \ 'source': join([ l:get_docsets_cmd, g:vache_default_docset_dir ]),
-        \ 'sink': function('s:browse'),
+        \ 'sink': function('vache#browse#browse'),
         \ 'options': '--with-nth=2,3 --delimiter="\t"',
         \ })
 endfunction
