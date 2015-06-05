@@ -22,12 +22,33 @@ let s:filetype_options = {
     \ 'svg': [ 'svg' ],
     \ }
 
+function! s:quote(string)
+    return '"' . a:string . '"'
+endfunction
+
+function! s:osx_browse_cmd(uri)
+    return join([
+        \ "osascript -e 'tell application",
+        \ s:quote(g:vache_browser),
+        \ 'to open location',
+        \ s:quote(a:uri) . "'"
+        \ ])
+endfunction
+
 function! s:browse(line)
     let l:uri = pyeval('vache.decode_url(unicode(vim.eval("a:line").strip()))')
 
-    let l:ff_out = system(eval('g:vache_browser') . ' "' . eval('l:uri') . '"')
+    let l:browse_cmd = join([ g:vache_browser, s:quote(l:uri) ])
+    if has('unix')
+        let l:uname = system('uname -s')
+        if l:uname == "Darwin\n"
+            let l:browse_cmd = s:osx_browse_cmd(l:uri)
+        endif
+    endif
+
+    let l:browser_out = system(l:browse_cmd)
     if v:shell_error != 0
-        echoerr 'vache: browser err: '.l:ff_out
+        echoerr 'vache: browser err: ' . l:browser_out
     endif
 endfunction
 
@@ -54,7 +75,7 @@ function! vache#lookup(...)
 
     let l:fzf_options = '--with-nth=2,3 --delimiter="\t"'
     if a:0 == 1
-        let l:fzf_options = l:fzf_options . ' --query="' . a:1 . '"'
+        let l:fzf_options = l:fzf_options . ' --query=' . s:quote(a:1)
     endif
 
     call fzf#run({
