@@ -57,16 +57,16 @@ let s:get_docsets_cmd = 'python2 ' . expand('<sfile>:p:h') . '/vache/get_docsets
 function! vache#lookup(...)
     let l:filetype_options = extend(s:filetype_options, g:vache_filetype_options)
 
-    let l:get_docsets_cmd = join([s:get_docsets_cmd, g:vache_default_docset_dir])
+    let l:get_docsets_cmd = join([ s:get_docsets_cmd, g:vache_default_docset_dir ])
     if has_key(l:filetype_options, &ft)
         let l:options = filetype_options[&ft]
         if type(l:options) == 3
             let l:families = join(l:options, ',')
             let l:args = ['--families', l:families, g:vache_default_docset_dir]
-            let l:get_docsets_cmd = join([s:get_docsets_cmd] + l:args)
+            let l:get_docsets_cmd = join([ s:get_docsets_cmd ] + l:args)
 
         elseif type(l:options) == 4
-            let l:get_docsets_cmd = join([s:get_docsets_cmd, l:options.dir])
+            let l:get_docsets_cmd = join([ s:get_docsets_cmd, l:options.dir ])
 
         else
             echoerr 'vache: bad vache_filetype_options value for filetype: ' . &ft
@@ -90,12 +90,12 @@ function! vache#sift(...)
         let l:get_docsets_cmd = s:get_docsets_cmd
     else
         let l:families = join(a:000, ',')
-        let l:get_docsets_cmd = join([s:get_docsets_cmd, '--families', l:families])
+        let l:get_docsets_cmd = join([ s:get_docsets_cmd, '--families', l:families ])
     endif
     echo 'cmd: ' . l:get_docsets_cmd
 
     call fzf#run({
-        \ 'source': join([l:get_docsets_cmd, g:vache_default_docset_dir]),
+        \ 'source': join([ l:get_docsets_cmd, g:vache_default_docset_dir ]),
         \ 'sink': function('s:browse'),
         \ 'options': '--with-nth=2,3 --delimiter="\t"',
         \ })
