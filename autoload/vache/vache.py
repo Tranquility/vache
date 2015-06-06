@@ -53,12 +53,17 @@ def get_plist_files(docset_root):
     if platform.system() == 'Darwin':
         maxdepth = '4'
 
-    out = subprocess.check_output(
+    find_p = subprocess.Popen(
         ['find', docset_root,
          '-maxdepth', maxdepth,
          '-type', 'f',
-         '-name', '*.plist']
+         '-name', '*.plist'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
     )
+    out, err = find_p.communicate()
+    if find_p.returncode != 0:
+        print 'get_docsets.py :', err
 
     return db.fetchplists(string.split(out, os.linesep))
 
