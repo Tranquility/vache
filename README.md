@@ -1,5 +1,6 @@
 Vache - graze on docs from vim
 ==============================================================
+![travis flare indicating build status](https://img.shields.io/travis/dnhgff/vache.svg)
 
 vache provides fuzzy documentation browsing / lookup for ([Dash][1] / [Zeal][2])
 documentation sets, all from the comfort of (neo)vim
