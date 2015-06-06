@@ -7,7 +7,7 @@ import platform
 
 DOCSET_ROOT = None
 if os.path.isdir('./test-data'):
-    DOCSET_ROOT = os.path.join(os.getcwd(), 'test-data')
+    DOCSET_ROOT = os.path.join(os.getcwd(), 'test-data/docsets')
 elif platform.system() == 'Linux':
     DOCSET_ROOT = os.path.join(
         os.environ['HOME'],
