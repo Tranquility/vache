@@ -6,7 +6,9 @@ import sys
 import platform
 
 DOCSET_ROOT = None
-if platform.system() == 'Linux':
+if os.path.isdir('./test-data'):
+    DOCSET_ROOT = os.path.join(os.getcwd(), 'test-data')
+elif platform.system() == 'Linux':
     DOCSET_ROOT = os.path.join(
         os.environ['HOME'],
         '.local/share/Zeal/Zeal/docsets'

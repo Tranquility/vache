@@ -8,8 +8,4 @@ python:
   - "3.4"
   - "nightly"
 
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq findutils
-
 script: make
