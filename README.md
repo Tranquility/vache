@@ -76,8 +76,8 @@ box for 90% of use cases. for the remaining 10%, global variables exist
 supported docset families
 -------------------------
 
-all docsets should be assumed to work unless they are found in the list for
-issue [#9][4]
+every docset must work, or else it is a bug. if you encounter such a thing,
+please report it to the [issue tracker] [5]
 
 the following is a list of associations from filetype to a list of docset
 families enabled for that filetype. please submit issues / pull requests to add more
@@ -102,7 +102,6 @@ please see CONTRIBUTING.md in this same project
 known bugs
 ----------
 
-* some documentation sets use unsupported schemas for their sqlite database
 * windows support is incomplete until we have an implementation of a replacement
   for the unix `find` command
 
@@ -111,3 +110,4 @@ known bugs
 [2]: http://zealdocs.org
 [3]: https://github.com/junegunn/fzf
 [4]: https://github.com/dnhgff/vache/issues/9
+[5]: https://github.com/dnhgff/vache/issues
