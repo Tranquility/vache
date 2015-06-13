@@ -47,15 +47,29 @@ if not os.path.exists(LOG_DB):
 def get_names(doc_db):
     with sqlite3.connect(doc_db) as conn:
         conn.text_factory = str
-        return conn.execute('SELECT name FROM searchIndex')
+        try:
+            return conn.execute('SELECT name FROM searchIndex')
+
+        except sqlite3.OperationalError:
+            return conn.execute('SELECT ZTOKENNAME FROM ZTOKEN')
 
 
 def get_uri_path(doc_db, name):
     with sqlite3.connect(doc_db) as conn:
-        (uri,) = conn.execute(
-            'SELECT path FROM searchIndex WHERE name = ?', (name,)
-        ).fetchone()
-        return uri
+        try:
+            (uri,) = conn.execute(
+                'SELECT path FROM searchIndex WHERE name = ?', (name,)
+            ).fetchone()
+            return uri
+
+        except sqlite3.OperationalError:
+            (uri,) = conn.execute('''select ZPATH from ZFILEPATH
+                where Z_PK = (select ZFILE from ZTOKENMETAINFORMATION
+                    where Z_PK = (select ZMETAINFORMATION from ZTOKEN
+                        where ZTOKENNAME = ?))''',
+                (name,)
+            ).fetchone()
+            return uri
 
 
 def log_bad_plist(plist, error):
