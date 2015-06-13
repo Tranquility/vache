@@ -36,11 +36,16 @@ def get_names(plists):
 
 
 def get_url(path, name):
-    uri_path = db.get_uri_path(doc_db_for(path), name)
-    absolute_path = os.path.join(
-        resource_dir_for(path), 'Documents', uri_path
-    )
-    return 'file:///' + absolute_path
+    doc_db = doc_db_for(path)
+    try:
+        uri_path = db.get_uri_path(doc_db, name)
+        absolute_path = os.path.join(
+            resource_dir_for(path), 'Documents', uri_path
+        )
+        return 'file:///' + absolute_path
+
+    except sqlite3.OperationalError as e:
+        db.log_bad_docset_db(doc_db, e)
 
 
 def decode_url(line):
