@@ -37,7 +37,7 @@ def get_names(plists):
 
 def construct_url(doc_root, line):
     family, name = string.split(line, SEP)
-    for _, path in get_plist_files_for_families(doc_root, [ family ]):
+    for _, path in get_plist_files_for_families(doc_root, [family]):
         doc_db = doc_db_for(path)
         try:
             uri_path = db.get_uri_path(doc_db, name)
