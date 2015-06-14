@@ -40,6 +40,7 @@ function! vache#lookup(...)
     let l:filetype_options = extend(s:filetype_options, g:vache_filetype_options)
 
     let l:get_docsets_cmd = join([ s:get_docsets_cmd, g:vache_default_docset_dir ])
+    let l:docset_root = g:vache_default_docset_dir
     if has_key(l:filetype_options, &ft)
         let l:options = filetype_options[&ft]
         if type(l:options) == 3
@@ -48,6 +49,7 @@ function! vache#lookup(...)
             let l:get_docsets_cmd = join([ s:get_docsets_cmd ] + l:args)
 
         elseif type(l:options) == 4
+            let l:docset_root = l:options.dir
             let l:get_docsets_cmd = join([ s:get_docsets_cmd, l:options.dir ])
 
         else
@@ -55,7 +57,7 @@ function! vache#lookup(...)
         endif
     endif
 
-    let l:fzf_options = '--with-nth=2,3 --delimiter="\t"'
+    let l:fzf_options = ''
     if a:0 == 1
         let l:fzf_options = l:fzf_options . ' --query="' . a:1 . '"'
     endif
@@ -63,7 +65,8 @@ function! vache#lookup(...)
     call fzf#run({
         \ 'source': l:get_docsets_cmd,
         \ 'sink': function('vache#browse#browse'),
-        \ 'options': l:fzf_options
+        \ 'options': l:fzf_options,
+        \ 'docset_root': l:docset_root,
         \ })
 endfunction
 
@@ -79,6 +82,6 @@ function! vache#sift(...)
     call fzf#run({
         \ 'source': join([ l:get_docsets_cmd, g:vache_default_docset_dir ]),
         \ 'sink': function('vache#browse#browse'),
-        \ 'options': '--with-nth=2,3 --delimiter="\t"',
+        \ 'docset_root': g:vache_default_docset_dir,
         \ })
 endfunction

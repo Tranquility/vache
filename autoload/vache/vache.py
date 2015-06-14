@@ -23,9 +23,9 @@ def get_names(plists):
 
         prefix = None
         try:
-            prefix = path + SEP + str(plist[u'DocSetPlatformFamily']) + SEP
+            prefix = str(plist[u'DocSetPlatformFamily']) + SEP
         except KeyError:
-            prefix = path + SEP + 'unknown' + SEP
+            prefix = 'unknown' + SEP
 
         try:
             for (name,) in db.get_names(doc_db):
@@ -35,22 +35,22 @@ def get_names(plists):
             db.log_bad_docset_db(doc_db, e)
 
 
-def get_url(path, name):
-    doc_db = doc_db_for(path)
-    try:
-        uri_path = db.get_uri_path(doc_db, name)
-        absolute_path = os.path.join(
-            resource_dir_for(path), 'Documents', uri_path
-        )
-        return 'file:///' + absolute_path
+def construct_url(doc_root, line):
+    family, name = string.split(line, SEP)
+    for _, path in get_plist_files_for_families(doc_root, [ family ]):
+        doc_db = doc_db_for(path)
+        try:
+            uri_path = db.get_uri_path(doc_db, name)
+            if uri_path is None:
+                continue
 
-    except sqlite3.OperationalError as e:
-        db.log_bad_docset_db(doc_db, e)
+            absolute_path = os.path.join(
+                resource_dir_for(path), 'Documents', uri_path
+            )
+            return 'file:///' + absolute_path
 
-
-def decode_url(line):
-    path, family, name = string.split(line, SEP)
-    return get_url(path, name)
+        except sqlite3.OperationalError as e:
+            db.log_bad_docset_db(doc_db, e)
 
 
 def get_plist_files(docset_root):
