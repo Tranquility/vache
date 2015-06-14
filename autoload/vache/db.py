@@ -63,10 +63,11 @@ def get_uri_path(doc_db, name):
             return uri
 
         except sqlite3.OperationalError:
-            (uri,) = conn.execute('''select ZPATH from ZFILEPATH
+            (uri,) = conn.execute(
+                '''select ZPATH from ZFILEPATH
                 where Z_PK = (select ZFILE from ZTOKENMETAINFORMATION
-                    where Z_PK = (select ZMETAINFORMATION from ZTOKEN
-                        where ZTOKENNAME = ?))''',
+                where Z_PK = (select ZMETAINFORMATION from ZTOKEN
+                where ZTOKENNAME = ?))''',
                 (name,)
             ).fetchone()
             return uri
