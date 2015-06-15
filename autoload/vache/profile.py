@@ -42,12 +42,12 @@ def all_names():
 
 
 def all_urls():
-    plists = vache.get_plist_files(DOCSET_ROOT)
     last_family = None
     doc_paths = None
-    errors = []
     bad_family = False
-    for line in vache.get_names(plists):
+    bad_families = []
+
+    for line in vache.get_names(vache.get_plist_files(DOCSET_ROOT)):
         family, name = string.split(line, '\t')
         if family != last_family:
             doc_paths = list(vache.doc_paths_for(
@@ -64,12 +64,12 @@ def all_urls():
         try:
             url_result['ok']
         except KeyError:
-            errors.append(url_result['error'])
+            url_result['error']
         except TypeError as e:
             bad_family = True
-            errors.append(repr(e))
+            bad_families.append((family, e))
 
-    print 'errors: {}'.format(errors)
+    print bad_families
 
 
 def profile(expr, path):
