@@ -59,10 +59,6 @@ def get_names(doc_db):
             return conn.execute('SELECT ZTOKENNAME FROM ZTOKEN')
 
 
-class NameMatchFailure(Exception):
-    pass
-
-
 def get_uri_path(doc_db, name):
     with sqlite3.connect(doc_db) as conn:
         conn.text_factory = str
@@ -81,7 +77,7 @@ def get_uri_path(doc_db, name):
             ).fetchone()
 
         if result is None:
-            raise NameMatchFailure(doc_db, name)
+            return None
         (uri,) = result
         return uri
 

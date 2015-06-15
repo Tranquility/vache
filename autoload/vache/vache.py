@@ -36,24 +36,26 @@ def get_names(plists):
 
 
 def get_url(doc_paths, name):
-    try:
-        for doc_db, resource_dir in doc_paths:
+    for doc_db, resource_dir in doc_paths:
+        uri_path = None
+        try:
             uri_path = db.get_uri_path(doc_db, name)
-            if uri_path is None:
-                continue
+        except sqlite3.OperationalError as e:
+            db.log_bad_docset_db(doc_db, e)
+            return {'error': repr(e)}
 
-            absolute_path = os.path.join(
-                resource_dir, 'Documents', uri_path
-            )
-            return {'ok': 'file:///' + absolute_path}
+        if uri_path is None:
+            continue
 
-    except sqlite3.OperationalError as e:
-        db.log_bad_docset_db(doc_db, e)
-        return {'error': repr(e)}
+        absolute_path = os.path.join(
+            resource_dir, 'Documents', uri_path
+        )
+        return {'ok': 'file:///' + absolute_path}
 
-    except db.NameMatchFailure as e:
+    for doc_db, _ in doc_paths:
         db.log_bad_name_match(doc_db, name)
-        return {'error': repr(e)}
+
+    return {'error': 'could not find documentation for {}'.format(name)}
 
 
 def doc_paths_for(plists):

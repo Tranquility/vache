@@ -1,10 +1,10 @@
 .PHONY : profile clean lint
 
 profile :
-	python autoload/vache/profile.py
+	python autoload/vache/profile.py | tee prof.out
 
 clean :
-	rm -f all_names.prof family_names.prof all_urls.prof
+	rm -f all_names.prof family_names.prof all_urls.prof test-data/
 
 lint :
 	flake8 --max-complexity 10 autoload/vache
