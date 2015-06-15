@@ -35,22 +35,37 @@ def get_names(plists):
             db.log_bad_docset_db(doc_db, e)
 
 
-def construct_url(doc_root, line):
-    family, name = string.split(line, SEP)
-    for _, path in get_plist_files_for_families(doc_root, [family]):
-        doc_db = doc_db_for(path)
-        try:
+def get_url(doc_paths, name):
+    try:
+        for doc_db, resource_dir in doc_paths:
             uri_path = db.get_uri_path(doc_db, name)
             if uri_path is None:
                 continue
 
             absolute_path = os.path.join(
-                resource_dir_for(path), 'Documents', uri_path
+                resource_dir, 'Documents', uri_path
             )
-            return 'file:///' + absolute_path
+            return {'ok': 'file:///' + absolute_path}
 
-        except sqlite3.OperationalError as e:
-            db.log_bad_docset_db(doc_db, e)
+    except sqlite3.OperationalError as e:
+        db.log_bad_docset_db(doc_db, e)
+        return {'error': repr(e)}
+
+    except db.NameMatchFailure as e:
+        db.log_bad_name_match(doc_db, name)
+        return {'error': repr(e)}
+
+
+def doc_paths_for(plists):
+    for _, path in plists:
+        yield doc_db_for(path), resource_dir_for(path)
+
+
+def construct_url(docset_root, line):
+    family, name = string.split(line, SEP)
+    plists = get_plist_files_for_families(docset_root, [str(family)])
+    doc_paths = doc_paths_for(plists)
+    return get_url(doc_paths, name)
 
 
 def get_plist_files(docset_root):
@@ -82,3 +97,9 @@ def get_plist_files_for_families(docset_root, families):
 
         except KeyError as e:
             db.log_bad_plist(plist, e)
+        except GeneratorExit as e:
+            raise e
+        except BaseException as e:
+                raise Exception('{} : {} : {}'.format(
+                    docset_root, families, repr(e)
+                ))

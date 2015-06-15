@@ -3,6 +3,7 @@ import cProfile
 import pstats
 import os
 import sys
+import string
 import platform
 
 DOCSET_ROOT = None
@@ -40,6 +41,37 @@ def all_names():
         pass
 
 
+def all_urls():
+    plists = vache.get_plist_files(DOCSET_ROOT)
+    last_family = None
+    doc_paths = None
+    errors = []
+    bad_family = False
+    for line in vache.get_names(plists):
+        family, name = string.split(line, '\t')
+        if family != last_family:
+            doc_paths = list(vache.doc_paths_for(
+                vache.get_plist_files_for_families(DOCSET_ROOT, [family])
+            ))
+            last_family = family
+            if bad_family:
+                bad_family = False
+
+        if bad_family:
+            continue
+
+        url_result = vache.get_url(doc_paths, name)
+        try:
+            url_result['ok']
+        except KeyError:
+            errors.append(url_result['error'])
+        except TypeError as e:
+            bad_family = True
+            errors.append(repr(e))
+
+    print 'errors: {}'.format(errors)
+
+
 def profile(expr, path):
     cProfile.run(expr, path)
     pstats.Stats(path).strip_dirs().sort_stats('cumulative').print_stats(15)
@@ -48,6 +80,7 @@ def profile(expr, path):
 def main():
     profile('all_names()', 'all_names.prof')
     profile('family_names()', 'family_names.prof')
+    profile('all_urls()', 'all_urls.prof')
 
 if __name__ == '__main__':
     main()
