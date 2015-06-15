@@ -42,6 +42,11 @@ if not os.path.exists(LOG_DB):
             , error TEXT
             , UNIQUE(plist)
             )""")
+        conn.execute("""CREATE TABLE name_match_failure
+            ( id PRIMARY KEY
+            , doc_db TEXT
+            , name TEXT
+            )""")
 
 
 def get_names(doc_db):
@@ -54,23 +59,31 @@ def get_names(doc_db):
             return conn.execute('SELECT ZTOKENNAME FROM ZTOKEN')
 
 
+class NameMatchFailure(Exception):
+    pass
+
+
 def get_uri_path(doc_db, name):
     with sqlite3.connect(doc_db) as conn:
+        conn.text_factory = str
+        result = None
         try:
-            (uri,) = conn.execute(
+            result = conn.execute(
                 'SELECT path FROM searchIndex WHERE name = ?', (name,)
             ).fetchone()
-            return uri
-
         except sqlite3.OperationalError:
-            (uri,) = conn.execute(
+            result = conn.execute(
                 '''select ZPATH from ZFILEPATH
                 where Z_PK = (select ZFILE from ZTOKENMETAINFORMATION
                 where Z_PK = (select ZMETAINFORMATION from ZTOKEN
                 where ZTOKENNAME = ?))''',
                 (name,)
             ).fetchone()
-            return uri
+
+        if result is None:
+            raise NameMatchFailure(doc_db, name)
+        (uri,) = result
+        return uri
 
 
 def log_bad_plist(plist, error):
@@ -86,6 +99,15 @@ def log_bad_docset_db(doc_db, error):
         conn.execute(
             'INSERT OR IGNORE INTO sql_log (doc_db, error) VALUES (?, ?)',
             (doc_db, unicode(error))
+        )
+
+
+def log_bad_name_match(doc_db, name):
+    with sqlite3.connect(LOG_DB) as conn:
+        conn.execute(
+            """INSERT INTO name_match_failure
+            (doc_db, name) VALUES (?, ?)""",
+            (doc_db, name)
         )
 
 

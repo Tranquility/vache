@@ -27,7 +27,12 @@ if has('unix')
 endif
 
 function! vache#browse#browse(line) dict
-    let l:uri = pyeval('vache.construct_url(vim.eval("self.docset_root"), unicode(vim.eval("a:line").strip()))')
+    let l:uri_result = pyeval('vache.construct_url(vim.eval("self.docset_root"), unicode(vim.eval("a:line").strip()))')
+    if has_key(l:uri_result, 'error')
+        echoerr 'vache: failure to construct uri: ' . l:uri_result.error
+        return
+    endif
+    let l:uri = l:uri_result.ok
     let l:browser_out = system(s:browse_cmd(l:uri))
     if v:shell_error != 0
         echoerr 'vache: browser err: ' . l:browser_out
