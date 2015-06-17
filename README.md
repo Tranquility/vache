@@ -102,8 +102,7 @@ please see CONTRIBUTING.md in this same project
 known bugs
 ----------
 
-* windows support is incomplete until we have an implementation of a replacement
-  for the unix `find` command
+see the [bug tracker] [6]
 
 
 [1]: https://kapeli.com
@@ -111,3 +110,4 @@ known bugs
 [3]: https://github.com/junegunn/fzf
 [4]: https://github.com/dnhgff/vache/issues/9
 [5]: https://github.com/dnhgff/vache/issues
+[6]: https://github.com/dnhgff/vache/labels/bug
